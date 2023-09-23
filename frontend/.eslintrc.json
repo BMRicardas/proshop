@@ -75,5 +75,6 @@
         "unnamedComponents": "arrow-function"
       }
     ]
-  }
+  },
+  "reportUnusedDisableDirectives": true
 }
