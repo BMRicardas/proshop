@@ -1,16 +1,23 @@
-import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Button, Card, Col, Image, ListGroup, Row } from 'react-bootstrap';
+import { Link, useParams } from 'react-router-dom';
 
-import { products, Product } from '../mocks/products';
 import { Rating } from '../components/rating';
+import { Product } from '../types/product';
 
 export function ProductScreen() {
+  const [product, setProduct] = useState<Product>();
   const { id: productId } = useParams();
 
-  const product = products.find((p: Product) => {
-    return p._id === productId;
-  });
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const { data } = await axios.get(`/api/products/${productId}`);
+      setProduct(data);
+    };
+
+    fetchProduct();
+  }, [productId]);
 
   return (
     <div>
@@ -28,8 +35,8 @@ export function ProductScreen() {
             </ListGroup.Item>
             <ListGroup.Item>
               <Rating
-                //   @ts-expect-error
-                value={product.rating}
+                // @ts-expect-error
+                value={product?.rating}
                 text={`${product?.numReviews} reviews`}
               />
             </ListGroup.Item>
@@ -55,7 +62,7 @@ export function ProductScreen() {
                   <Col>Status:</Col>
                   <Col>
                     <strong>
-                      {/* @ts-expect-error € */}
+                      {/* @ts-expect-error */}
                       {product?.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}
                     </strong>
                   </Col>

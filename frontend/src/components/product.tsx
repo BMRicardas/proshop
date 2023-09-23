@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-import type { Product as TProduct } from '../mocks/products';
+import type { Product as TProduct } from '../types/product';
 
 import { Rating } from './rating';
 
