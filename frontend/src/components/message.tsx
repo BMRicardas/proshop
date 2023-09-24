@@ -4,7 +4,7 @@ import { Variant } from 'react-bootstrap/esm/types';
 
 interface Props {
   children: ReactNode;
-  variant: Variant;
+  variant?: Variant;
 }
 
 export default function Message({ children, variant = 'info' }: Props) {

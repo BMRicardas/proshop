@@ -10,6 +10,7 @@ interface Props {}
 
 // eslint-disable-next-line no-empty-pattern
 export function Header({}: Props) {
+  // @ts-expect-error
   const { cartItems } = useSelector((state) => state.cart);
 
   return (
@@ -37,7 +38,10 @@ export function Header({}: Props) {
                         marginLeft: '5px',
                       }}
                     >
-                      {cartItems.reduce((a, c) => a + c.qty, 0)}
+                      {cartItems.reduce(
+                        (a: any, c: { qty: any }) => a + c.qty,
+                        0,
+                      )}
                     </Badge>
                   )}
                 </Nav.Link>
