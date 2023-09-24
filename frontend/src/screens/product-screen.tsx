@@ -1,18 +1,42 @@
-import { Button, Card, Col, Image, ListGroup, Row } from 'react-bootstrap';
-import { Link, useParams } from 'react-router-dom';
+import { ChangeEvent, useState } from 'react';
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Image,
+  ListGroup,
+  Row,
+} from 'react-bootstrap';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
-import { Rating } from '../components/rating';
-import { useGetProductDetailsQuery } from '../store/slices/products-api.slice';
 import { Loader } from '../components/loader';
 import Message from '../components/message';
+import { Rating } from '../components/rating';
+import { useGetProductDetailsQuery } from '../store/slices/products-api.slice';
+import { addToCart } from '../store/slices/cart.slice';
 
 export function ProductScreen() {
+  const [qty, setQty] = useState(1);
   const { id: productId } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     data: product,
     isLoading,
     error,
   } = useGetProductDetailsQuery(productId);
+
+  function addToCartHandler() {
+    dispatch(addToCart({ ...product, qty }));
+    navigate('/cart');
+  }
+
+  const optionValues = Array.from(
+    { length: product?.countInStock },
+    (_, idx) => idx + 1,
+  );
 
   return (
     <>
@@ -72,11 +96,40 @@ export function ProductScreen() {
                       </Col>
                     </Row>
                   </ListGroup.Item>
+                  {product.countInStock > 0 && (
+                    <ListGroup.Item>
+                      <Form.Group>
+                        <Row>
+                          <Col>
+                            <Form.Label>Qty:</Form.Label>
+                          </Col>
+                          <Col>
+                            <Form.Select
+                              value={qty}
+                              onChange={({
+                                target,
+                              }: ChangeEvent<HTMLSelectElement>) =>
+                                setQty(Number(target.value))
+                              }
+                            >
+                              {optionValues.map((x) => (
+                                <option key={x} value={x}>
+                                  {x}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          </Col>
+                        </Row>
+                      </Form.Group>
+                    </ListGroup.Item>
+                  )}
                   <ListGroup.Item>
                     <Button
                       className="btn-block"
                       type="button"
                       disabled={product?.countInStock === 0}
+                      // TODO useCallback, arrow here or above?
+                      onClick={() => addToCartHandler()}
                     >
                       Add To Cart
                     </Button>

@@ -1,9 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = localStorage.getItem('cart')
-  ? // @ts-expect-error
-    JSON.parse(localStorage.getItem('cart'))
-  : { cartItems: [] };
+// const initialState = localStorage.getItem('cart')
+//   ? JSON.parse(localStorage.getItem('cart'))
+//   : { cartItems: [] };
+
+const storedCart = localStorage.getItem('cart');
+const initialState = storedCart ? JSON.parse(storedCart) : { cartItems: [] };
 
 function addDecimals(num: number) {
   return (Math.round(num * 100) / 100).toFixed(2);
@@ -16,19 +18,26 @@ const cartSlice = createSlice({
     addToCart: (state, action) => {
       const item = action.payload;
 
-      const existItem = state.cartItems.find((x) => x._id === item.id);
+      const existItem = state.cartItems.find(
+        (x: { _id: any }) => x._id === item._id,
+      );
 
       if (existItem) {
-        state.cartItems = state.cartItems.map((x) =>
+        state.cartItems = state.cartItems.map((x: { _id: any }) =>
           x._id === existItem._id ? item : x,
         );
       } else {
-        state.cartItems = [...state.cartItems];
+        state.cartItems = [...state.cartItems, item];
       }
 
       // Calculate items price
       state.itemsPrice = addDecimals(
-        state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0),
+        state.cartItems.reduce(
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          (acc: number, item: { price: number; qty: number }) =>
+            acc + item.price * item.qty,
+          0,
+        ),
       );
 
       // Calculate shipping price (if order is over €100, then free, else €10 shipping)
@@ -45,6 +54,8 @@ const cartSlice = createSlice({
       ).toFixed(2);
 
       localStorage.setItem('cart', JSON.stringify(state));
+
+      return state;
     },
   },
 });
