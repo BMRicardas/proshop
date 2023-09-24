@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { ChangeEvent } from 'react';
 import {
   Button,
@@ -14,7 +13,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Message from '../components/message';
-import { addToCart } from '../store/slices/cart.slice';
+import { addToCart, removeFromCart } from '../store/slices/cart.slice';
 
 export function CartScreen() {
   const navigate = useNavigate();
@@ -24,6 +23,14 @@ export function CartScreen() {
 
   async function addToCartHandler(product: any, qty: number) {
     dispatch(addToCart({ ...product, qty }));
+  }
+
+  async function removeFromCartHandler(id: any) {
+    dispatch(removeFromCart(id));
+  }
+
+  async function checkoutHandler() {
+    navigate('/login?redirect=/shipping');
   }
 
   return (
@@ -70,7 +77,11 @@ export function CartScreen() {
                       </Form.Select>
                     </Col>
                     <Col md={2}>
-                      <Button type="button" variant="light">
+                      <Button
+                        type="button"
+                        variant="light"
+                        onClick={() => removeFromCartHandler(item._id)}
+                      >
                         <FaTrash />
                       </Button>
                     </Col>
@@ -107,6 +118,7 @@ export function CartScreen() {
                 type="button"
                 className="btn-block"
                 disabled={cartItems.length === 0}
+                onClick={() => checkoutHandler()}
               >
                 Proceed To Checkout
               </Button>
