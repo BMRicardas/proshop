@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 
 import { Rating } from '../components/rating';
 import { useGetProductDetailsQuery } from '../store/slices/products-api.slice';
+import { Loader } from '../components/loader';
+import Message from '../components/message';
 
 export function ProductScreen() {
   const { id: productId } = useParams();
@@ -12,18 +14,18 @@ export function ProductScreen() {
     error,
   } = useGetProductDetailsQuery(productId);
 
-  console.log(product);
-
   return (
     <>
       <Link className="btn btn-light my-3" to="/">
         Go Back
       </Link>
       {isLoading ? (
-        <h2>Loading...</h2>
+        <Loader />
       ) : error ? (
-        // @ts-expect-error
-        <div>{error?.data?.message || error?.error}</div>
+        <Message variant="danger">
+          {/* @ts-expect-error */}
+          {error?.data?.message || error?.error}
+        </Message>
       ) : (
         <div>
           <Row>
